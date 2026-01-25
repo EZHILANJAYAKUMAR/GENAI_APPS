@@ -107,10 +107,6 @@ if "current_chat_id" in st.session_state:
 
             st.rerun()
 else:
-    st.markdown('</div>', unsafe_allow_html=True)
-    # Add padding to prevent overlap
-    st.markdown('<div style="padding-top: 120px;"></div>', unsafe_allow_html=True)
-    
     # Welcome screen
     st.title("Welcome to LLM ChatBot App! 🤖")
     st.markdown("""
@@ -125,11 +121,16 @@ else:
     2. Type your message and press Enter
     3. The AI will respond with helpful, contextual answers
     
-    ### Features:
+    ### Current Features (v1.0):
     - Real-time AI responses
     - Session management
     - User authentication
     - Responsive design
     
-    Start chatting now!
+    ### Coming Soon in v2.0:
+    - 🎤 **Voice Input**: Speak your messages instead of typing
+    - 🔊 **Voice Output**: Listen to AI responses with text-to-speech
+    - 📎 **File Attachments**: Upload documents, images, and files for analysis
+    
+    Start chatting now! 🚀
     """)
