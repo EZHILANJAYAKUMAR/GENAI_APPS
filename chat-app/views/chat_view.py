@@ -43,8 +43,22 @@ class ChatView:
     @staticmethod
     def render_messages(messages):
         for msg in messages:
-            with st.chat_message(msg.role):
-                st.write(msg.content)
+            if msg.role == "user":
+                # User message on the right
+                col1, col2 = st.columns([1, 1])
+                with col1:
+                    st.empty()
+                with col2:
+                    with st.chat_message("user"):
+                        st.write(msg.content)
+            else:
+                # Assistant message on the left
+                col1, col2 = st.columns([1, 1])
+                with col1:
+                    with st.chat_message("assistant"):
+                        st.write(msg.content)
+                with col2:
+                    st.empty()
 
     @staticmethod
     def chat_input():

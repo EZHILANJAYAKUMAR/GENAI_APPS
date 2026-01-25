@@ -4,7 +4,7 @@ from controllers.auth_controller import AuthController
 from views.chat_view import ChatView
 from views.auth_view import AuthView
 
-st.set_page_config(layout="wide", page_title="LLM ChatBot-App")
+st.set_page_config(layout="wide", page_title="LLM ChatBot-App 🚀")
 
 # ================= AUTH =================
 if "user_id" not in st.session_state:
@@ -65,23 +65,34 @@ ChatView.sidebar(chats, new_chat, select_chat, rename_chat)
 messages = ChatController.get_messages(st.session_state.current_chat_id)
 ChatView.render_messages(messages)
 
-user_input = ChatView.chat_input()
+if "waiting" not in st.session_state:
+    st.session_state.waiting = False
 
-if user_input:
-    ChatController.add_message(
-        st.session_state.current_chat_id,
-        "user",
-        user_input
-    )
+if st.session_state.waiting:
+    with st.spinner("Generating response..."):
+        ai_reply = ChatController.generate_ai_reply(
+            st.session_state.current_chat_id
+        )
 
-    ai_reply = ChatController.generate_ai_reply(
-        st.session_state.current_chat_id
-    )
+        ChatController.add_message(
+            st.session_state.current_chat_id,
+            "assistant",
+            ai_reply
+        )
 
-    ChatController.add_message(
-        st.session_state.current_chat_id,
-        "assistant",
-        ai_reply
-    )
+        st.session_state.waiting = False
 
-    st.rerun()
+        st.rerun()
+else:
+    user_input = ChatView.chat_input()
+
+    if user_input:
+        ChatController.add_message(
+            st.session_state.current_chat_id,
+            "user",
+            user_input
+        )
+
+        st.session_state.waiting = True
+
+        st.rerun()
