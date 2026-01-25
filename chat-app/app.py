@@ -57,9 +57,20 @@ def select_chat(chat_id):
 def rename_chat(chat_id, new_title):
     ChatController.rename_chat(chat_id, new_title)
 
+def delete_chat(chat_id):
+    ChatController.delete_chat(chat_id)
+    # If deleting current chat, switch to latest or create new
+    if st.session_state.current_chat_id == chat_id:
+        latest_chat = ChatController.get_latest_chat(st.session_state.user_id)
+        if latest_chat:
+            st.session_state.current_chat_id = latest_chat.id
+        else:
+            new_chat = ChatController.create_chat(st.session_state.user_id)
+            st.session_state.current_chat_id = new_chat.id
+
 # ================= SIDEBAR =================
 chats = ChatController.get_all_chats(st.session_state.user_id)
-ChatView.sidebar(chats, new_chat, select_chat, rename_chat)
+ChatView.sidebar(chats, new_chat, select_chat, rename_chat, delete_chat)
 
 # ================= CHAT VIEW =================
 messages = ChatController.get_messages(st.session_state.current_chat_id)
@@ -92,6 +103,12 @@ else:
             "user",
             user_input
         )
+
+        # Update chat title if it's the first message
+        current_chat = ChatController.get_chat(st.session_state.current_chat_id)
+        if current_chat.title == "New Chat":
+            new_title = ChatController.generate_chat_title(st.session_state.current_chat_id)
+            ChatController.rename_chat(st.session_state.current_chat_id, new_title)
 
         st.session_state.waiting = True
 

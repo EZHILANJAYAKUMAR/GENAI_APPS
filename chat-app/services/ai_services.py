@@ -17,23 +17,26 @@ class AIService:
         return cls._llm
 
     @classmethod
-    def generate_reply(cls, db_messages):
+    def generate_reply(cls, messages, system_message="You are a helpful AI assistant."):
         """
-        db_messages: List[ChatMessage ORM objects]
+        messages: List of ChatMessage ORM objects or dicts with 'role' and 'content' keys
+        system_message: Custom system message (optional)
         """
         llm = cls.get_llm()
 
         # ✅ ONLY LangChain message objects go here
         lc_messages = [
-            SystemMessage(content="You are a helpful AI assistant.")
+            SystemMessage(content=system_message)
         ]
 
         # OPTIONAL: limit history
-        for msg in db_messages[-10:]:
-            if msg.role == "user":
-                lc_messages.append(HumanMessage(content=msg.content))
-            elif msg.role == "assistant":
-                lc_messages.append(AIMessage(content=msg.content))
+        for msg in messages[-10:]:
+            role = msg.role if hasattr(msg, 'role') else msg['role']
+            content = msg.content if hasattr(msg, 'content') else msg['content']
+            if role == "user":
+                lc_messages.append(HumanMessage(content=content))
+            elif role == "assistant":
+                lc_messages.append(AIMessage(content=content))
 
         # ✅ THIS is what invoke expects
         response = llm.invoke(lc_messages)
