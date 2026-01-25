@@ -3,7 +3,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-class Settings:
+class Config:
+    ## GROQ and Model configuration
+    GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+    MODEL_NAME = os.getenv("MODEL_NAME", "llama3-8b-8192")
+
+    ## Database configuration
     DB_HOST = os.getenv("DB_HOST")
     DB_PORT = os.getenv("DB_PORT")
     DB_NAME = os.getenv("DB_NAME")
@@ -15,4 +20,4 @@ class Settings:
         f"@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     )
 
-settings = Settings()
+config = Config()

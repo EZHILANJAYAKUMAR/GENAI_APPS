@@ -1,6 +1,6 @@
 from db import SessionLocal
 from models import ChatSession, ChatMessage
-
+from services.ai_services import AIService
 
 class ChatController:
 
@@ -82,3 +82,10 @@ class ChatController:
         db.add(msg)
         db.commit()
         db.close()
+
+    @staticmethod
+    def generate_ai_reply(chat_id):
+        messages = ChatController.get_messages(chat_id)
+        print("Generating AI reply for messages:", messages)
+        return AIService.generate_reply(messages)
+

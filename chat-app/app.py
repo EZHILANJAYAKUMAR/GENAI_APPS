@@ -74,11 +74,14 @@ if user_input:
         user_input
     )
 
-    # Dummy bot reply
+    ai_reply = ChatController.generate_ai_reply(
+        st.session_state.current_chat_id
+    )
+
     ChatController.add_message(
         st.session_state.current_chat_id,
         "assistant",
-        f"Echo: {user_input}"
+        ai_reply
     )
 
     st.rerun()
