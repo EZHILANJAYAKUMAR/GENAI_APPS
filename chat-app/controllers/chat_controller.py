@@ -1,35 +1,46 @@
 from db import SessionLocal
 from models import ChatSession, ChatMessage
 
+
 class ChatController:
 
+    # ---------- DB ----------
     @staticmethod
     def get_db():
         return SessionLocal()
 
-    # --------- SESSION ----------
+    # ---------- CHAT SESSION ----------
     @staticmethod
-    def get_latest_chat():
+    def get_latest_chat(user_id):
         db = ChatController.get_db()
-        chat = db.query(ChatSession)\
-            .order_by(ChatSession.created_at.desc())\
+        chat = (
+            db.query(ChatSession)
+            .filter(ChatSession.user_id == user_id)
+            .order_by(ChatSession.created_at.desc())
             .first()
+        )
         db.close()
         return chat
 
     @staticmethod
-    def get_all_chats():
+    def get_all_chats(user_id):
         db = ChatController.get_db()
-        chats = db.query(ChatSession)\
-            .order_by(ChatSession.created_at.desc())\
+        chats = (
+            db.query(ChatSession)
+            .filter(ChatSession.user_id == user_id)
+            .order_by(ChatSession.created_at.desc())
             .all()
+        )
         db.close()
         return chats
 
     @staticmethod
-    def create_chat():
+    def create_chat(user_id):
         db = ChatController.get_db()
-        chat = ChatSession()
+        chat = ChatSession(
+            user_id=user_id,
+            title="New Chat"
+        )
         db.add(chat)
         db.commit()
         db.refresh(chat)
@@ -40,19 +51,23 @@ class ChatController:
     def rename_chat(chat_id, title):
         db = ChatController.get_db()
         chat = db.query(ChatSession).filter(ChatSession.id == chat_id).first()
-        if chat and chat.title == "New Chat":
-            chat.title = title[:30]
+
+        if chat:
+            chat.title = title
             db.commit()
+
         db.close()
 
-    # --------- MESSAGES ----------
+    # ---------- MESSAGES ----------
     @staticmethod
     def get_messages(chat_id):
         db = ChatController.get_db()
-        msgs = db.query(ChatMessage)\
-            .filter(ChatMessage.session_id == chat_id)\
-            .order_by(ChatMessage.created_at)\
+        msgs = (
+            db.query(ChatMessage)
+            .filter(ChatMessage.session_id == chat_id)
+            .order_by(ChatMessage.created_at)
             .all()
+        )
         db.close()
         return msgs
 
@@ -67,25 +82,3 @@ class ChatController:
         db.add(msg)
         db.commit()
         db.close()
-
-
-    @staticmethod
-    def create_chat(user_id):
-        db = ChatController.get_db()
-        chat = ChatSession(user_id=user_id)
-        db.add(chat)
-        db.commit()
-        db.refresh(chat)
-        db.close()
-        return chat
-
-    @staticmethod
-    def get_all_chats(user_id):
-        db = ChatController.get_db()
-        chats = db.query(ChatSession)\
-            .filter(ChatSession.user_id == user_id)\
-            .order_by(ChatSession.created_at.desc())\
-            .all()
-        db.close()
-        return chats
-

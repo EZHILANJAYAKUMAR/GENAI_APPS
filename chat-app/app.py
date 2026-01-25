@@ -4,8 +4,9 @@ from controllers.auth_controller import AuthController
 from views.chat_view import ChatView
 from views.auth_view import AuthView
 
+st.set_page_config(layout="wide", page_title="LLM ChatBot-App")
 
-# ---------- AUTH ----------
+# ================= AUTH =================
 if "user_id" not in st.session_state:
     tab1, tab2 = st.tabs(["Login", "Register"])
 
@@ -30,20 +31,54 @@ if "user_id" not in st.session_state:
 
     st.stop()
 
-# ---------- LOGOUT ----------
+# ================= LOGOUT =================
 with st.sidebar:
     if st.button("🚪 Logout"):
         st.session_state.clear()
         st.rerun()
 
-# ---------- CHAT ----------
+# ================= INIT CHAT =================
 if "current_chat_id" not in st.session_state:
+    latest_chat = ChatController.get_latest_chat(st.session_state.user_id)
+    if latest_chat:
+        st.session_state.current_chat_id = latest_chat.id
+    else:
+        chat = ChatController.create_chat(st.session_state.user_id)
+        st.session_state.current_chat_id = chat.id
+
+# ================= CALLBACKS =================
+def new_chat():
     chat = ChatController.create_chat(st.session_state.user_id)
     st.session_state.current_chat_id = chat.id
 
+def select_chat(chat_id):
+    st.session_state.current_chat_id = chat_id
+
+def rename_chat(chat_id, new_title):
+    ChatController.rename_chat(chat_id, new_title)
+
+# ================= SIDEBAR =================
 chats = ChatController.get_all_chats(st.session_state.user_id)
-ChatView.sidebar(
-    chats,
-    lambda: ChatController.create_chat(st.session_state.user_id),
-    lambda cid: st.session_state.update({"current_chat_id": cid})
-)
+ChatView.sidebar(chats, new_chat, select_chat, rename_chat)
+
+# ================= CHAT VIEW =================
+messages = ChatController.get_messages(st.session_state.current_chat_id)
+ChatView.render_messages(messages)
+
+user_input = ChatView.chat_input()
+
+if user_input:
+    ChatController.add_message(
+        st.session_state.current_chat_id,
+        "user",
+        user_input
+    )
+
+    # Dummy bot reply
+    ChatController.add_message(
+        st.session_state.current_chat_id,
+        "assistant",
+        f"Echo: {user_input}"
+    )
+
+    st.rerun()

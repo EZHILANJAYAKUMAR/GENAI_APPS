@@ -20,17 +20,13 @@ class User(Base):
 
 class ChatSession(Base):
     __tablename__ = "chat_sessions"
+    
     user_id = Column(Integer, ForeignKey("users.id"))
-
     id = Column(Integer, primary_key=True)
     title = Column(String(100), default="New Chat")
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    messages = relationship(
-        "ChatMessage",
-        back_populates="session",
-        cascade="all, delete"
-    )
+    messages = relationship("ChatMessage",back_populates="session",cascade="all, delete")
 
 class ChatMessage(Base):
     __tablename__ = "chat_messages"
