@@ -31,12 +31,6 @@ if "user_id" not in st.session_state:
 
     st.stop()
 
-# ================= LOGOUT =================
-with st.sidebar:
-    if st.button("🚪 Logout"):
-        st.session_state.clear()
-        st.rerun()
-
 # ================= CALLBACKS =================
 def new_chat():
     chat = ChatController.create_chat(st.session_state.user_id)

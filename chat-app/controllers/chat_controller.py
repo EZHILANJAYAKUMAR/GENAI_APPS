@@ -28,6 +28,7 @@ class ChatController:
         chats = (
             db.query(ChatSession)
             .filter(ChatSession.user_id == user_id)
+            .filter(ChatSession.messages.any())  # Only show chats with messages
             .order_by(ChatSession.created_at.desc())
             .all()
         )

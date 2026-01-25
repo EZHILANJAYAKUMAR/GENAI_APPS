@@ -26,7 +26,20 @@ class ChatView:
             st.image(f"https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg", width=100)
             user_name = st.session_state.get('user_full_name')
             st.write("**Welcome, {}!**".format(user_name.replace('%20', ' ')))
+
+            # Home and Logout buttons
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button("🏠 Home"):
+                    if "current_chat_id" in st.session_state:
+                        del st.session_state.current_chat_id
+                    st.rerun()
             st.divider()
+            with col2:
+                if st.button("🚪 Logout"):
+                    st.session_state.clear()
+                    st.rerun()
+            
 
             st.button("➕ New Chat", on_click=new_chat_cb)
             st.divider()
