@@ -29,8 +29,8 @@ class AIService:
             SystemMessage(content=system_message)
         ]
 
-        # OPTIONAL: limit history
-        for msg in messages[-10:]:
+        # OPTIONAL: limit history to last 50 messages for better context
+        for msg in messages[-50:]:
             role = msg.role if hasattr(msg, 'role') else msg['role']
             content = msg.content if hasattr(msg, 'content') else msg['content']
             if role == "user":

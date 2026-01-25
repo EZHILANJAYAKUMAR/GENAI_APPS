@@ -44,15 +44,9 @@ def rename_chat(chat_id, new_title):
 
 def delete_chat(chat_id):
     ChatController.delete_chat(chat_id)
-    # If deleting current chat, switch to latest or create new
-    if "current_chat_id" in st.session_state and st.session_state.current_chat_id == chat_id:
-        latest_chat = ChatController.get_latest_chat(st.session_state.user_id)
-        if latest_chat:
-            st.session_state.current_chat_id = latest_chat.id
-        else:
-            # No chats left, remove current_chat_id to show welcome screen
-            if "current_chat_id" in st.session_state:
-                del st.session_state.current_chat_id
+    # Always go to home page after deleting a chat
+    if "current_chat_id" in st.session_state:
+        del st.session_state.current_chat_id
 
 # ================= SIDEBAR =================
 chats = ChatController.get_all_chats(st.session_state.user_id)
