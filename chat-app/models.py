@@ -10,6 +10,7 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     email = Column(String(100), unique=True, nullable=False)
+    full_name = Column(String(40), unique=True, nullable=False)
     password_hash = Column(String(255), nullable=False)
 
     def set_password(self, password):

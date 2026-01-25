@@ -21,9 +21,9 @@ if "user_id" not in st.session_state:
                 st.error("Invalid credentials")
 
     with tab2:
-        email, pwd, reg_btn = AuthView.register_form()
+        full_name, email, pwd, reg_btn = AuthView.register_form()
         if reg_btn:
-            user = AuthController.register(email, pwd)
+            user = AuthController.register(full_name, email, pwd)
             if user:
                 st.success("Registered! Please login.")
             else:
